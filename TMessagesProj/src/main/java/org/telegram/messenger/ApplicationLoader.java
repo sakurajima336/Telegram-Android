@@ -193,6 +193,7 @@ public class ApplicationLoader extends Application {
             return;
         }
         applicationInited = true;
+        com.wfc.wfgram.WfgramFeatures.init(ApplicationLoader.applicationContext);
         NativeLoader.initNativeLibs(ApplicationLoader.applicationContext);
 
         try {

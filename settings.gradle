@@ -1,3 +1,4 @@
+rootProject.name = 'Wfgram'
 include ':TMessagesProj'
 include ':TMessagesProj_App'
 include ':TMessagesProj_AppHuawei'
