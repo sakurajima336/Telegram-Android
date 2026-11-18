@@ -26,15 +26,14 @@ the way Nekogram does it.
 
 ## FCM
 
-- `google-services.json` in `TMessagesProj`, `TMessagesProj_App` and
-  `TMessagesProj_AppStandalone` replaced with our own Firebase project
+- `google-services.json` in `TMessagesProj` and `TMessagesProj_App`
+  replaced with our own Firebase project
   (package `com.wfc.wfgram`). Originals backed up outside the repo.
 - FCM code itself is upstream's (`GcmPushListenerService`,
   `PushListenerController`) and needs no changes: it picks the project
   up from google-services.json.
 - Registered packages: `com.wfc.wfgram` (release) and
-  `com.wfc.wfgram.beta` (debug). The `.web` (standalone) package is
-  still not registered, so FCM will not match on that variant.
+  `com.wfc.wfgram.beta` (debug).
 
 ## Wfgram feature layer
 
@@ -44,3 +43,21 @@ the way Nekogram does it.
 - Exactly one upstream hook: `ApplicationLoader.postInitApplication()`
   calls `WfgramFeatures.init(...)` — keep it that way so upstream
   syncs stay near conflict-free.
+
+## Removed app modules
+
+Wfgram ships only the main app. Deleted modules (and their
+`settings.gradle` includes): `TMessagesProj_AppHuawei`,
+`TMessagesProj_AppHockeyApp`, `TMessagesProj_AppStandalone`,
+`TMessagesProj_AppTests`. Kept: `TMessagesProj` (core library),
+`TMessagesProj_App` (the app), `jlatexmath` and `TMessagesProj_Modules`
+(libraries the app depends on).
+Two dormant upstream references remain on purpose, to keep upstream
+merges simple: `checkVisibility` in `TMessagesProj/build.gradle` only
+probes an AppHockeyApp file path when an HA_public task runs, and
+buildSrc's TestGeneratorPlugin is never applied without AppTests.
+Upstream syncs will try to resurrect the deleted modules; drop them
+again after each sync.
+
+Note: the upstream Dockerfile still names the deleted modules in its
+build command; build with Gradle directly instead.
