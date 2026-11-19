@@ -6,6 +6,9 @@ Wfgram-only code lives in this package. Upstream Telegram code stays in
 
 - `WfgramFeatures` — entry point, called once at app init.
 - `WfgramConfig` — Wfgram's own SharedPreferences store (`wfgramConfig`).
+- `WfgramForward` — forward-without-attribution entry: ChatActivity
+  hooks set its flag from the dedicated action, and the forward flow
+  sends with the sender name hidden.
 
 Add new features here, gate them behind `WfgramFeatures.isEnabled()` /
 a flag in `WfgramConfig`, and hook them into upstream code with the

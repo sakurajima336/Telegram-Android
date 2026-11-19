@@ -139,6 +139,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.zxing.common.detector.MathUtils;
+import com.wfc.wfgram.WfgramForward;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AccountInstance;
@@ -1245,6 +1246,7 @@ public class ChatActivity extends BaseFragment implements
     public final static int OPTION_RETRY = 0;
     public final static int OPTION_DELETE = 1;
     public final static int OPTION_FORWARD = 2;
+    public final static int OPTION_FORWARD_NOQUOTE = 119;
     public final static int OPTION_COPY = 3;
     public final static int OPTION_SAVE_TO_GALLERY = 4;
     public final static int OPTION_APPLY_LOCALIZATION_OR_THEME = 5;
@@ -1675,6 +1677,7 @@ public class ChatActivity extends BaseFragment implements
 
     private final static int copy = 10;
     private final static int forward = 11;
+    private final static int forward_noquote = 2011;
     private final static int delete = 12;
     private final static int chat_enc_timer = 13;
     private final static int chat_menu_attach = 14;
@@ -3781,6 +3784,10 @@ public class ChatActivity extends BaseFragment implements
                     }
                     createDeleteMessagesAlert(null, null);
                 } else if (id == forward) {
+                    WfgramForward.noQuote = false;
+                    openForward(true);
+                } else if (id == forward_noquote) {
+                    WfgramForward.noQuote = true;
                     openForward(true);
                 } else if (id == share) {
                     share();
@@ -8132,7 +8139,10 @@ public class ChatActivity extends BaseFragment implements
         }
 
         actionsButtonsLayout = new ChatActivityActionsButtonsLayout(context, resourceProvider, blurredBackgroundButtonsColorProvider, glassBackgroundDrawableFactory);
-        actionsButtonsLayout.setForwardButtonOnClickListener(v -> openForward(false));
+        actionsButtonsLayout.setForwardButtonOnClickListener(v -> {
+            WfgramForward.noQuote = false;
+            openForward(false);
+        });
         actionsButtonsLayout.setReplyButtonOnClickListener(v -> {
             MessageObject messageObject = null;
             for (int a = 1; a >= 0; a--) {
@@ -10818,6 +10828,7 @@ public class ChatActivity extends BaseFragment implements
             actionModeViews.add(actionMode.addItemWithWidth(copy, R.drawable.msg_copy, dp(48), LocaleController.getString(R.string.Copy)));
             if (!isSavedMessages && getDialogId() != UserObject.VERIFY) {
                 actionModeViews.add(actionMode.addItemWithWidth(forward, R.drawable.msg_forward, dp(48), LocaleController.getString(R.string.Forward)));
+                actionModeViews.add(actionMode.addItemWithWidth(forward_noquote, R.drawable.msg_forward_noquote, dp(48), LocaleController.getString(R.string.NoQuoteForward)));
             }
             actionModeViews.add(actionMode.addItemWithWidth(share, R.drawable.msg_shareout, dp(48), LocaleController.getString(R.string.ShareFile)));
             actionModeViews.add(actionMode.addItemWithWidth(delete, R.drawable.msg_delete, dp(48), LocaleController.getString(R.string.Delete)));
@@ -15820,6 +15831,9 @@ public class ChatActivity extends BaseFragment implements
                     messagePreviewParams.attach(forwardingPreviewView);
                 }
                 messagePreviewParams.updateForward(messageObjectsToForward, dialog_id);
+                if (WfgramForward.consumeNoQuote()) {
+                    messagePreviewParams.hideForwardSendersName = true;
+                }
                 if (messagePreviewParams.isEmpty() && editingMessageObject == null) {
                     messagePreviewParams = null;
                 }
@@ -19961,6 +19975,7 @@ public class ChatActivity extends BaseFragment implements
                 ActionBarMenuItem starItem = actionBar.createActionMode().getItem(star);
                 ActionBarMenuItem editItem = actionBar.createActionMode().getItem(edit);
                 ActionBarMenuItem forwardItem = actionBar.createActionMode().getItem(forward);
+                ActionBarMenuItem forwardNoQuoteItem = actionBar.createActionMode().getItem(forward_noquote);
                 ActionBarMenuItem deleteItem = actionBar.createActionMode().getItem(delete);
                 ActionBarMenuItem tagItem = actionBar.createActionMode().getItem(tag_message);
                 ActionBarMenuItem shareItem = actionBar.createActionMode().getItem(share);
@@ -19973,6 +19988,10 @@ public class ChatActivity extends BaseFragment implements
                         forwardItem.setEnabled(cantForwardMessagesCount == 0 || noforwards);
                         animators.add(ObjectAnimator.ofFloat(forwardItem, View.ALPHA, cantForwardMessagesCount == 0 ? 1.0f : 0.5f));
 
+                        if (forwardNoQuoteItem != null) {
+                            forwardNoQuoteItem.setEnabled(cantForwardMessagesCount == 0 || noforwards);
+                            animators.add(ObjectAnimator.ofFloat(forwardNoQuoteItem, View.ALPHA, cantForwardMessagesCount == 0 ? 1.0f : 0.5f));
+                        }
                         if (noforwards && forwardItem.getBackground() != null) {
                             forwardItem.setBackground(null);
                         } else if (forwardItem.getBackground() == null) {
@@ -19995,6 +20014,10 @@ public class ChatActivity extends BaseFragment implements
                     if (forwardItem != null) {
                         forwardItem.setEnabled(cantForwardMessagesCount == 0 || noforwards);
                         forwardItem.setAlpha(cantForwardMessagesCount == 0 ? 1.0f : 0.5f);
+                        if (forwardNoQuoteItem != null) {
+                            forwardNoQuoteItem.setEnabled(cantForwardMessagesCount == 0 || noforwards);
+                            forwardNoQuoteItem.setAlpha(cantForwardMessagesCount == 0 ? 1.0f : 0.5f);
+                        }
                         if (noforwards) {
                         } else if (forwardItem.getBackground() == null) {
                             ThemeBind.selectorBackground(forwardItem, Theme.createSelectorDrawable(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), 3), null, ThemeBind.of(Theme.key_actionBarActionModeDefaultSelector), getResourceProvider());
@@ -31927,6 +31950,7 @@ public class ChatActivity extends BaseFragment implements
                         case OPTION_SAVE_TO_DOWNLOADS_OR_MUSIC:
                         case OPTION_SHARE:
                         case OPTION_FORWARD:
+                        case OPTION_FORWARD_NOQUOTE:
                         case OPTION_REPLY:
                             options.remove(i);
                             items.remove(i);
@@ -34329,7 +34353,8 @@ public class ChatActivity extends BaseFragment implements
                 createDeleteMessagesAlert(selectedObject, selectedObjectGroup, true);
                 break;
             }
-            case OPTION_FORWARD: {
+            case OPTION_FORWARD:
+            case OPTION_FORWARD_NOQUOTE: {
                 if (getMessagesController().isFrozen()) {
                     AccountFrozenAlert.show(currentAccount);
                     selectedObject = null;
@@ -34337,6 +34362,7 @@ public class ChatActivity extends BaseFragment implements
                     selectedObjectGroup = null;
                     return;
                 }
+                WfgramForward.noQuote = option == OPTION_FORWARD_NOQUOTE;
                 forwardingMessage = selectedObject;
                 forwardingMessageGroup = selectedObjectGroup;
                 Bundle args = new Bundle();
@@ -35446,6 +35472,7 @@ public class ChatActivity extends BaseFragment implements
 
                 messagePreviewParams = null;
                 hideFieldPanel(false);
+                final boolean wfNoQuote = WfgramForward.consumeNoQuote();
                 for (int a = 0; a < dids.size(); a++) {
                     final long did = dids.get(a).dialogId;
                     final Long price = prices == null ? (Long) 0L : prices.get(did);
@@ -35457,7 +35484,7 @@ public class ChatActivity extends BaseFragment implements
                         params.suggestionParams = messageSuggestionParams;
                         getSendMessagesHelper().sendMessage(params);
                     }
-                    getSendMessagesHelper().sendMessage(fmessages, did, false, false, notify, scheduleDate, scheduleRepeatPeriod, null, -1, price == null ? 0 : price, getSendMonoForumPeerId(), getSendMessageSuggestionParams());
+                    getSendMessagesHelper().sendMessage(fmessages, did, wfNoQuote, false, notify, scheduleDate, scheduleRepeatPeriod, null, -1, price == null ? 0 : price, getSendMonoForumPeerId(), getSendMessageSuggestionParams());
                 }
                 fragment.finishFragment();
                 createUndoView();
@@ -46934,6 +46961,9 @@ public class ChatActivity extends BaseFragment implements
                     items.add(LocaleController.getString(R.string.Forward));
                     options.add(OPTION_FORWARD);
                     icons.add(R.drawable.msg_forward);
+                    items.add(LocaleController.getString(R.string.NoQuoteForward));
+                    options.add(OPTION_FORWARD_NOQUOTE);
+                    icons.add(R.drawable.msg_forward_noquote);
                 }
                 if (allowUnpin) {
                     items.add(LocaleController.getString(R.string.UnpinMessage));

@@ -44,6 +44,34 @@ the way Nekogram does it.
   calls `WfgramFeatures.init(...)` — keep it that way so upstream
   syncs stay near conflict-free.
 
+## Features
+
+### Forward without attribution
+
+Modeled on Nagram's no-quote forward entry (theirs: a static flag on
+ChatActivity set from a dedicated menu action, feeding the upstream
+hide-sender-name forward path).
+
+- New state holder `com.wfc.wfgram.WfgramForward` (transient flag +
+  consume), new strings `NoQuoteForward` (`values/strings_wfgram.xml`,
+  plus zh-rCN / zh-rTW), icon `msg_forward_noquote` copied from Nagram
+  (hdpi–xxhdpi).
+- ChatActivity hooks (the only upstream file touched):
+  - selection action mode: extra item `forward_noquote` (2011) next to
+    the forward item, enabled/alpha mirroring it; the bottom forward
+    button and the regular forward item clear the flag, the new item
+    sets it, both then run the normal `openForward`.
+  - single-message menu: `OPTION_FORWARD_NOQUOTE` (119) next to
+    Forward, handled by the same `processSelectedOption` case as
+    `OPTION_FORWARD`, setting the flag from the chosen option; also
+    removed for hidden-sensitive messages like Forward.
+  - `didSelectDialogs` direct-send branch: the flag is consumed once
+    and passed as `forwardFromMyName` to `SendMessagesHelper.sendMessage`
+    (server-side `drop_author`, no forward header).
+  - `showFieldPanel` forward branch: the flag is consumed and applied
+    as `messagePreviewParams.hideForwardSendersName`, so the preview
+    shows the hidden-sender state and the eventual send uses it.
+
 ## Removed app modules
 
 Wfgram ships only the main app. Deleted modules (and their
