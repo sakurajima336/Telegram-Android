@@ -11679,4 +11679,12 @@
     <string name="FpnvConsentSimSlot">SIM Slot</string>
     <string name="FpnvConsentSimSlotValue">SIM %1$d</string>
     <string name="FpnvConsentPhoneNumber">Phone Number</string>
+
+    <!-- Wfgram strings -->
+    <string name="NoQuoteForward">Forward without attribution</string>
+    <string name="WfgramSettings">Wfgram Settings</string>
+    <string name="WfgramFeaturesHeader">Features</string>
+    <string name="WfgramNoQuoteForwardInfo">When on, a “Forward without attribution” entry appears next to Forward in message menus. Messages sent with it carry no forward source.</string>
+    <string name="WfgramAboutHeader">About</string>
+    <string name="WfgramAboutInfo">Wfgram is a personal-use client based on the official Telegram source code.</string>
 </resources>

@@ -46,6 +46,19 @@ the way Nekogram does it.
 
 ## Features
 
+### Strings
+
+Telegram 13.x does not read UI strings from Android resources at
+runtime: a buildSrc task (`TelegramStringsTask`) generates binary
+localization assets, and it only reads files literally named
+`strings.xml` (`values/strings.xml` for English, `values-*/strings.xml`
+for other languages). Strings kept in any other file (e.g.
+`strings_wfgram.xml`) compile into R but resolve to `LOC_ERR` at
+runtime. All Wfgram strings therefore live in the official
+`strings.xml` files, in a marked `<!-- Wfgram strings -->` block;
+zh-CN/zh-TW have their own `strings.xml` with only the Wfgram keys,
+which the same task picks up automatically.
+
 ### Wfgram settings
 
 `SettingsActivity` gains one row (id 100, purple gradient, `msg_settings`

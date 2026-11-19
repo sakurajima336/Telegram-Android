@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Wfgram strings -->
     <string name="NoQuoteForward">無引用轉發</string>
     <string name="WfgramSettings">Wfgram 設定</string>
     <string name="WfgramFeaturesHeader">功能</string>
