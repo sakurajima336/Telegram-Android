@@ -139,6 +139,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.zxing.common.detector.MathUtils;
+import com.wfc.wfgram.WfgramConfig;
 import com.wfc.wfgram.WfgramForward;
 
 import org.telegram.PhoneFormat.PhoneFormat;
@@ -10828,7 +10829,9 @@ public class ChatActivity extends BaseFragment implements
             actionModeViews.add(actionMode.addItemWithWidth(copy, R.drawable.msg_copy, dp(48), LocaleController.getString(R.string.Copy)));
             if (!isSavedMessages && getDialogId() != UserObject.VERIFY) {
                 actionModeViews.add(actionMode.addItemWithWidth(forward, R.drawable.msg_forward, dp(48), LocaleController.getString(R.string.Forward)));
-                actionModeViews.add(actionMode.addItemWithWidth(forward_noquote, R.drawable.msg_forward_noquote, dp(48), LocaleController.getString(R.string.NoQuoteForward)));
+                if (WfgramConfig.isNoQuoteForwardEnabled()) {
+                    actionModeViews.add(actionMode.addItemWithWidth(forward_noquote, R.drawable.msg_forward_noquote, dp(48), LocaleController.getString(R.string.NoQuoteForward)));
+                }
             }
             actionModeViews.add(actionMode.addItemWithWidth(share, R.drawable.msg_shareout, dp(48), LocaleController.getString(R.string.ShareFile)));
             actionModeViews.add(actionMode.addItemWithWidth(delete, R.drawable.msg_delete, dp(48), LocaleController.getString(R.string.Delete)));
@@ -46961,9 +46964,11 @@ public class ChatActivity extends BaseFragment implements
                     items.add(LocaleController.getString(R.string.Forward));
                     options.add(OPTION_FORWARD);
                     icons.add(R.drawable.msg_forward);
-                    items.add(LocaleController.getString(R.string.NoQuoteForward));
-                    options.add(OPTION_FORWARD_NOQUOTE);
-                    icons.add(R.drawable.msg_forward_noquote);
+                    if (WfgramConfig.isNoQuoteForwardEnabled()) {
+                        items.add(LocaleController.getString(R.string.NoQuoteForward));
+                        options.add(OPTION_FORWARD_NOQUOTE);
+                        icons.add(R.drawable.msg_forward_noquote);
+                    }
                 }
                 if (allowUnpin) {
                     items.add(LocaleController.getString(R.string.UnpinMessage));

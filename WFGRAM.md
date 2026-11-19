@@ -46,6 +46,17 @@ the way Nekogram does it.
 
 ## Features
 
+### Wfgram settings
+
+`SettingsActivity` gains one row (id 100, purple gradient, `msg_settings`
+icon, string `WfgramSettings`) right after the Language row; its click
+case presents `com.wfc.wfgram.WfgramSettingsActivity`. The page follows
+the upstream `AudioRecorderSettingsActivity` pattern (BaseFragment +
+RecyclerListView + HeaderCell/TextCheckCell/TextInfoPrivacyCell) and
+holds one switch per Wfgram feature, stored in `WfgramConfig`. The
+forward-without-attribution entries in `ChatActivity` are only added
+when `WfgramConfig.isNoQuoteForwardEnabled()` is true (default on).
+
 ### Forward without attribution
 
 Modeled on Nagram's no-quote forward entry (theirs: a static flag on

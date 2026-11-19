@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="NoQuoteForward">无引用转发</string>
+    <string name="WfgramSettings">Wfgram 设置</string>
+    <string name="WfgramFeaturesHeader">功能</string>
+    <string name="WfgramNoQuoteForwardInfo">开启后，消息菜单的「转发」旁会出现「无引用转发」，用它转发的消息不带转发来源。</string>
+    <string name="WfgramAboutHeader">关于</string>
+    <string name="WfgramAboutInfo">Wfgram 是基于官方 Telegram 源码的自用客户端。</string>
 </resources>

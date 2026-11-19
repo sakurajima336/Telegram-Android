@@ -15,6 +15,8 @@ public final class WfgramConfig {
 
     private static final String PREFS_NAME = "wfgramConfig";
 
+    private static final String KEY_NO_QUOTE_FORWARD = "no_quote_forward";
+
     private static SharedPreferences prefs;
 
     /** Master switch for every Wfgram feature. */
@@ -39,6 +41,20 @@ public final class WfgramConfig {
         if (prefs != null) {
             prefs.edit().putBoolean(key, value).apply();
         }
+    }
+
+    /** The stored preference for the "forward without attribution" entry. */
+    public static boolean noQuoteForward() {
+        return getBoolean(KEY_NO_QUOTE_FORWARD, true);
+    }
+
+    /** Whether the "forward without attribution" entry is shown in chat menus. */
+    public static boolean isNoQuoteForwardEnabled() {
+        return enabled && noQuoteForward();
+    }
+
+    public static void setNoQuoteForwardEnabled(boolean value) {
+        setBoolean(KEY_NO_QUOTE_FORWARD, value);
     }
 
     public static synchronized String getString(String key, String defValue) {
