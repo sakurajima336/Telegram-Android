@@ -141,6 +141,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.zxing.common.detector.MathUtils;
 import com.wfc.wfgram.WfgramConfig;
 import com.wfc.wfgram.WfgramForward;
+import com.wfc.wfgram.WfgramStrings;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AccountInstance;
@@ -10830,7 +10831,7 @@ public class ChatActivity extends BaseFragment implements
             if (!isSavedMessages && getDialogId() != UserObject.VERIFY) {
                 actionModeViews.add(actionMode.addItemWithWidth(forward, R.drawable.msg_forward, dp(48), LocaleController.getString(R.string.Forward)));
                 if (WfgramConfig.isNoQuoteForwardEnabled()) {
-                    actionModeViews.add(actionMode.addItemWithWidth(forward_noquote, R.drawable.msg_forward_noquote, dp(48), LocaleController.getString(R.string.NoQuoteForward)));
+                    actionModeViews.add(actionMode.addItemWithWidth(forward_noquote, R.drawable.msg_forward_noquote, dp(48), WfgramStrings.noQuoteForward()));
                 }
             }
             actionModeViews.add(actionMode.addItemWithWidth(share, R.drawable.msg_shareout, dp(48), LocaleController.getString(R.string.ShareFile)));
@@ -46965,7 +46966,7 @@ public class ChatActivity extends BaseFragment implements
                     options.add(OPTION_FORWARD);
                     icons.add(R.drawable.msg_forward);
                     if (WfgramConfig.isNoQuoteForwardEnabled()) {
-                        items.add(LocaleController.getString(R.string.NoQuoteForward));
+                        items.add(WfgramStrings.noQuoteForward());
                         options.add(OPTION_FORWARD_NOQUOTE);
                         icons.add(R.drawable.msg_forward_noquote);
                     }

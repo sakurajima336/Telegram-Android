@@ -12,6 +12,10 @@ Wfgram-only code lives in this package. Upstream Telegram code stays in
 - `WfgramSettingsActivity` — Wfgram's own settings page, opened from a
   dedicated row (id 100) in the main Telegram settings list. Feature
   switches live here, backed by `WfgramConfig`.
+- `WfgramStrings` — Wfgram UI strings resolved against the in-app
+  language (the current LocaleInfo), because the bundled localization
+  cannot follow Chinese language packs (their locale collapses to a
+  plain "zh" that matches no bundled overlay).
 
 Add new features here, gate them behind `WfgramFeatures.isEnabled()` /
 a flag in `WfgramConfig`, and hook them into upstream code with the

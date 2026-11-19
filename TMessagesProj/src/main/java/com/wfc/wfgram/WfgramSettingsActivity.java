@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -22,7 +21,8 @@ import org.telegram.ui.Components.RecyclerListView;
 /**
  * Wfgram's own settings page, opened from the main Telegram settings list.
  * Every Wfgram feature gets a switch here; the values live in
- * {@link WfgramConfig}.
+ * {@link WfgramConfig}. Layout and toggle handling follow the upstream
+ * settings activities (e.g. PrivacySettingsActivity).
  */
 public class WfgramSettingsActivity extends BaseFragment {
 
@@ -49,7 +49,7 @@ public class WfgramSettingsActivity extends BaseFragment {
     public View createView(Context context) {
         setHasOwnBackground(true);
         simpleActionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        simpleActionBar.setTitle(LocaleController.getString(R.string.WfgramSettings));
+        simpleActionBar.setTitle(WfgramStrings.settingsTitle());
         simpleActionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -63,15 +63,25 @@ public class WfgramSettingsActivity extends BaseFragment {
         fragmentView = frameLayout;
 
         listView = new RecyclerListView(context);
-        listView.setSectionsDrawBackground(true);
         listView.setSections();
-        listView.setLayoutManager(new LinearLayoutManager(context));
+        listView.setSectionsDrawBackground(true);
+        listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false) {
+            @Override
+            public boolean supportsPredictiveItemAnimations() {
+                return false;
+            }
+        });
         listView.setVerticalScrollBarEnabled(false);
+        listView.setLayoutAnimation(null);
+        listView.setItemAnimator(null);
         listView.setAdapter(adapter = new ListAdapter(context));
         listView.setOnItemClickListener((view, position) -> {
             if (position == ROW_NO_QUOTE_FORWARD) {
-                WfgramConfig.setNoQuoteForwardEnabled(!WfgramConfig.noQuoteForward());
-                adapter.notifyItemChanged(ROW_NO_QUOTE_FORWARD);
+                boolean newValue = !WfgramConfig.noQuoteForward();
+                WfgramConfig.setNoQuoteForwardEnabled(newValue);
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(newValue);
+                }
             }
         });
         frameLayout.addView(listView, LayoutHelper.createFrame(
@@ -120,19 +130,19 @@ public class WfgramSettingsActivity extends BaseFragment {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (holder.getItemViewType() == TYPE_HEADER) {
-                ((HeaderCell) holder.itemView).setText(LocaleController.getString(
-                        position == ROW_FEATURES_HEADER ? R.string.WfgramFeaturesHeader : R.string.WfgramAboutHeader
-                ));
+                ((HeaderCell) holder.itemView).setText(
+                        position == ROW_FEATURES_HEADER ? WfgramStrings.featuresHeader() : WfgramStrings.aboutHeader()
+                );
             } else if (holder.getItemViewType() == TYPE_CHECK) {
                 ((TextCheckCell) holder.itemView).setTextAndCheck(
-                        LocaleController.getString(R.string.NoQuoteForward),
+                        WfgramStrings.noQuoteForward(),
                         WfgramConfig.noQuoteForward(),
                         true
                 );
             } else {
-                ((TextInfoPrivacyCell) holder.itemView).setText(LocaleController.getString(
-                        position == ROW_NO_QUOTE_FORWARD_INFO ? R.string.WfgramNoQuoteForwardInfo : R.string.WfgramAboutInfo
-                ));
+                ((TextInfoPrivacyCell) holder.itemView).setText(
+                        position == ROW_NO_QUOTE_FORWARD_INFO ? WfgramStrings.noQuoteForwardInfo() : WfgramStrings.aboutInfo()
+                );
             }
         }
 

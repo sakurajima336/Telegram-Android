@@ -83,6 +83,7 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.SharedPrefsHelper;
 import org.telegram.utils.glass.BaseFragmentSimpleGlass;
 import com.wfc.wfgram.WfgramSettingsActivity;
+import com.wfc.wfgram.WfgramStrings;
 
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Wallet.GramWallet;
@@ -806,7 +807,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         items.add(SettingCell.Factory.of(8, IconBackgroundColors.CYAN.top, IconBackgroundColors.CYAN.bottom, R.drawable.settings_devices, getString(R.string.SettingsDevices), getString(R.string.SettingsDevicesInfo)));
         items.add(SettingCell.Factory.of(9, IconBackgroundColors.ORANGE_DEEP.top, IconBackgroundColors.ORANGE_DEEP.bottom, R.drawable.settings_power, getString(R.string.SettingsPowerSaving), getString(R.string.SettingsPowerSavingInfo)));
         items.add(SettingCell.Factory.of(10, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.settings_language, getString(R.string.SettingsLanguage), LocaleController.getCurrentLanguageName()));
-        items.add(SettingCell.Factory.of(100, 0xFF9B51E0, 0xFF6C3CE9, R.drawable.msg_settings, getString(R.string.WfgramSettings)));
+        items.add(SettingCell.Factory.of(100, 0xFF9B51E0, 0xFF6C3CE9, R.drawable.msg_settings, WfgramStrings.settingsTitle()));
 
         items.add(UItem.asShadow(null));
         if (!walletAbove && getMessagesController().config.walletAvailable.get()) {
